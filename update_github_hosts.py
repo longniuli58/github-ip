@@ -1,6 +1,6 @@
 import socket
+import os
 
-# 原始 GitHub 域名列表
 domains = [
     "github.com",
     "gist.github.com",
@@ -23,30 +23,43 @@ domains = [
     "github.githubassets.com"
 ]
 
+OUTPUT_FILE = "github_hosts.txt"
+
 def resolve_domain(domain):
     try:
-        ip = socket.gethostbyname(domain)
-        return ip
+        return socket.gethostbyname(domain)
     except Exception as e:
         print(f"[!] 无法解析 {domain}: {e}")
         return None
 
-def generate_hosts(domains):
-    new_hosts = []
+def generate_hosts():
+    lines = []
+
     for domain in domains:
         ip = resolve_domain(domain)
-        if ip:
-            new_hosts.append(f"{ip}\t{domain}")
-    return new_hosts
 
-def save_hosts(file_path, hosts_lines):
-    with open(file_path, "w", encoding="utf-8") as f:
+        if ip:
+            lines.append(f"{ip}\t{domain}")
+
+    return lines
+
+def save_hosts(lines):
+
+    if os.path.exists(OUTPUT_FILE):
+        os.remove(OUTPUT_FILE)
+        print(f"[+] 删除旧文件 {OUTPUT_FILE}")
+
+    with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
+
         f.write("# GitHub Start\n")
-        for line in hosts_lines:
+
+        for line in lines:
             f.write(line + "\n")
+
         f.write("# GitHub End\n")
-    print(f"[+] 新 hosts 文件已生成: {file_path}")
+
+    print(f"[+] 已生成 {OUTPUT_FILE}")
 
 if __name__ == "__main__":
-    hosts_lines = generate_hosts(domains)
-    save_hosts("github_hosts.txt", hosts_lines)
+    hosts = generate_hosts()
+    save_hosts(hosts)
