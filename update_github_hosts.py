@@ -2,16 +2,27 @@ import socket
 import os
 
 domains = [
-    "github.com", "gist.github.com", "api.github.com",
-    "assets-cdn.github.com", "raw.githubusercontent.com",
-    "gist.githubusercontent.com", "cloud.githubusercontent.com",
-    "camo.githubusercontent.com", "avatars0.githubusercontent.com",
-    "avatars1.githubusercontent.com", "avatars2.githubusercontent.com",
-    "avatars3.githubusercontent.com", "avatars4.githubusercontent.com",
-    "avatars5.githubusercontent.com", "avatars6.githubusercontent.com",
-    "avatars7.githubusercontent.com", "avatars8.githubusercontent.com",
-    "user-images.githubusercontent.com", "github.githubassets.com"
+    "github.com",
+    "gist.github.com",
+    "api.github.com",
+    "assets-cdn.github.com",
+    "raw.githubusercontent.com",
+    "gist.githubusercontent.com",
+    "cloud.githubusercontent.com",
+    "camo.githubusercontent.com",
+    "avatars0.githubusercontent.com",
+    "avatars1.githubusercontent.com",
+    "avatars2.githubusercontent.com",
+    "avatars3.githubusercontent.com",
+    "avatars4.githubusercontent.com",
+    "avatars5.githubusercontent.com",
+    "avatars6.githubusercontent.com",
+    "avatars7.githubusercontent.com",
+    "avatars8.githubusercontent.com",
+    "user-images.githubusercontent.com",
+    "github.githubassets.com"
 ]
+
 
 OUTPUT_FILE = "github_hosts.txt"
 
