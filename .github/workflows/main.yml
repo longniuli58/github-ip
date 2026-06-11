@@ -3,7 +3,8 @@ name: Update Cloudflare KV Hosts
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 0 */3 * *'  # 每3天
+    #- cron: '0 0 */3 * *'  # 每3天
+    - cron: '0 0 * * *'  # 每天 0点0分运行
 
 # 赋予 Actions 写入仓库的权限
 permissions:
