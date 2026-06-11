@@ -1,37 +1,31 @@
-name: Update GitHub Hosts Secret
+name: Update Cloudflare KV Hosts
 
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 0 */3 * *' # 每3天 UTC 0 点执行
-
-permissions:
-  contents: read
+    - cron: '0 0 */3 * *'  # 每3天
 
 jobs:
-  update_hosts:
+  build:
     runs-on: ubuntu-latest
+
     steps:
+      - uses: actions/checkout@v4
 
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
-      - name: Generate github_hosts.txt
+      - name: Generate hosts
         run: python update_github_hosts.py
 
-      - name: Update Worker Secret
+      - name: Upload to Cloudflare KV
         env:
           CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
           CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
-          WORKER_NAME: ${{ secrets.WORKER_NAME }}
+          KV_NAMESPACE_ID: ${{ secrets.CF_KV_NAMESPACE_ID }}
         run: |
-          HOSTS=$(cat github_hosts.txt | sed 's/"/\\"/g' | sed ':a;N;$!ba;s/\n/\\n/g')
-          curl -X PUT "https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/workers/scripts/${WORKER_NAME}/secrets/HOSTS_CONTENT" \
-            -H "Authorization: Bearer ${CF_API_TOKEN}" \
-            -H "Content-Type: application/json" \
-            --data "{\"text\":\"${HOSTS}\"}"
+          curl -X PUT "https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/storage/kv/namespaces/${KV_NAMESPACE_ID}/values/github_hosts" \
+          -H "Authorization: Bearer ${CF_API_TOKEN}" \
+          -H "Content-Type: text/plain" \
+          --data-binary @github_hosts.txt
