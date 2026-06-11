@@ -26,7 +26,7 @@ jobs:
 
       - name: Generate github_hosts.txt
         run: |
-          python update_hosts.py
+          python update_github_hosts.py
 
       - name: Update Worker Secret
         env:
