@@ -1,0 +1,41 @@
+name: Update GitHub Hosts Secret
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 */3 * *' # 每3天凌晨 UTC 0 点执行
+
+permissions:
+  contents: read
+
+jobs:
+  update_hosts:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install --upgrade
+
+      - name: Generate github_hosts.txt
+        run: |
+          python update_hosts.py
+
+      - name: Update Worker Secret
+        env:
+          CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          WORKER_NAME: github-hosts
+        run: |
+          HOSTS=$(cat github_hosts.txt | sed 's/"/\\"/g' | sed ':a;N;$!ba;s/\n/\\n/g')
+          curl -X PUT "https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/workers/scripts/${WORKER_NAME}/secrets/HOSTS_CONTENT" \
+            -H "Authorization: Bearer ${CF_API_TOKEN}" \
+            -H "Content-Type: application/json" \
+            --data "{\"text\":\"${HOSTS}\"}"
