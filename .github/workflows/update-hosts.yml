@@ -22,7 +22,7 @@ jobs:
           python-version: "3.12"
 
       - name: Generate github_hosts.txt
-        run: python update_hosts.py
+        run: python update_github_hosts.py
 
       - name: Update Worker Secret
         env:
